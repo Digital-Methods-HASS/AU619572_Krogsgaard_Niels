@@ -1,0 +1,94 @@
+---
+title: "Homework number 6"
+subtitle: "Cultural Datascience 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Loading data**
+```{r}
+pacman::p_load(gapminder, tidyverse)
+data <- gapminder
+```
+
+### Task 1
+**Task description**
+
+*Define a defensive function that calculates the Gross Domestic Product of a nation from the data available in the gapminder dataset. You can use the population and GDPpercapita columns for it.*
+
+*Using that function, calculate the GDP of Denmark in the following years: 1967, 1977, 1987, 1997, 2007, and 2017.*
+
+**Solution**
+```{r}
+# Defining function 
+GDP_calc_func <- function(data, year_x, country_x){
+  
+  population <- data$pop[which((data$year == year_x) & (data$country == country_x))]
+  gdp_p_cap <- data$gdpPercap[which((data$year == year_x) & (data$country == country_x))]
+  
+  if (!is.numeric(year_x)) {
+    warning("Year is not numeric")
+  }
+  
+  if (!is.character(country_x)) {
+    warning("Country is not character")
+  }
+  
+  if(year_x %in% data$year){
+    temp_val <- population * gdp_p_cap
+    return(temp_val)
+  } else {
+    warning("Error: Year not in list of possible years")
+  }
+}
+```
+
+```{r}
+# using the function
+years <- c(1967, 1977, 1987, 1997, 2007, 2017)
+countries <- c("Denmark")
+
+for (i in 1:length(years)) {
+  print(GDP_calc_func(data, years[i], countries))
+}
+```
+
+
+
+### Task 2
+**Task description**
+
+*Write a script that loops over each country in the gapminder dataset, tests whether the country starts with a ‘B’ , and prints out whether the life expectancy is smaller than 50, between 50 and 70, or greater than 70. (Hint: remember the grepl function, and review the Control Flow tutorial (https://swcarpentry.github.io/r-novice-gapminder/07-control-flow/index.html))*
+
+**Solution**
+```{r}
+
+
+for (i in 1:nrow(data)){
+  val <- data$country[i]
+  
+  if (substr(as.character(val), 1, 1) == "B") {
+    if (data$lifeExp[i] < 50) {
+      print(paste("In", data$year[i], "life expectancy in", as.character(val), "was smaller than 50 years"))
+      } else if ((data$lifeExp[i] > 50) & (data$lifeExp[i] < 70)) {
+      print(paste("In", data$year[i], "life expectancy in", as.character(val), "was between 50 and 70 years"))
+      } else if (data$lifeExp[i] > 70) {
+      print(paste("In", data$year[i], "life expectancy in", as.character(val), "was greater than 70 years"))
+      }
+  }
+}
+
+
+```
+
+
+### Task 3 (optional)
+**Task description**
+
+*Challenge/Optional: Write a script that loops over each country in the gapminder dataset, tests whether the country starts with a ‘M’ and graphs life expectancy against time (using plot() function) as a line graph if the mean life expectancy is under 50 years.*
+
+
+*Hint: If you are struggling with the gapminder tibble format, consider converting it into a dataframe, either by downloading it from the internet and loading it via read.csv (not read_csv), and/or using as.data.frame() conversion function and then appropriately subsetting.*
